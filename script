@@ -9,7 +9,13 @@ main () {
 
     hostname
     cecDecide
+    reboot
     menu
+    
+    if [ "$rebootChoice" = "Y"]; then
+        echo "Rebooting"
+        sudo reboot
+    fi
 }
 
 hostname() {
@@ -36,13 +42,23 @@ cecDecide() {
         echo ", already installed"
     else
         echo ", not installed"
-        echo -n "Would you like to install cec-client [Y]"
+        echo -n "Would you like to install cec-client [Y]: "
         read cecChoice
         if [ "$cecChoice" = "" ]; then
             cecChoice="Y"
         else
             cecChoice="${cecChoice^^}"
         fi
+    fi
+}
+
+reboot() {
+    echo -n "Reboot after setup [Y]: "
+    read rebootChoice
+    if [ "$rebootChoice" = "" ]; then
+        rebootChoice="Y"
+    else
+        rebootChoice="${rebootChoice^^}"
     fi
 }
 
@@ -100,6 +116,15 @@ genericSetup() {
         cecInstall
     fi
     
+    echo Install Profile
+    if [ ! -f kioskProfile.tar ]; then
+        wget "$host/kioskProfile.tar"
+    fi
+    if [ ! -d kioskProfile ]; then
+        mkdir ~/kioskProfile
+    fi
+    tar -xf kioskProfile.tar -C ~/kioskProfile
+    
     echo Configuring autostart
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
 @lxpanel --profile LXDE-pi
@@ -111,7 +136,7 @@ genericSetup() {
 apt-get install iceweasel
 apt-get install unclutter
 unclutter -display :0 -noevents -grab
-@iceweasel $url
+@iceweasel $url --profile kioskProfile
 _EOF_
 
 }
