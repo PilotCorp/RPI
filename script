@@ -147,7 +147,7 @@ _EOF_
 cecInstall() {
     echo Installing cec-client
     #https://github.com/Pulse-Eight/libcec
-    sudo apt-get install cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
+    sudo apt-get install -y cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
     cd
     git clone https://github.com/Pulse-Eight/platform.git
     mkdir platform/build
