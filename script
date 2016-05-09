@@ -12,7 +12,7 @@ main () {
     reboot
     menu
     
-    if [ "$rebootChoice" = "Y"]; then
+    if [ "$rebootChoice" = "Y" ]; then
         echo "Rebooting"
         sudo reboot
     fi
