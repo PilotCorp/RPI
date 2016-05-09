@@ -1,0 +1,174 @@
+#!/bin/bash
+#Raspberry Pi setup script
+host="http://signs.pilotpen.com"
+main () {
+    if [ $(id -u) = "0" ]; then
+        echo You cannot be root to run this script >&2
+        exit 1
+    fi
+
+    hostname
+    cecDecide
+    menu
+}
+
+hostname() {
+    name=`cat /etc/hostname`
+    echo -n "Hostname [$name]: "
+    read newName
+    if [ "$newName" != "" ] && [ "$newName" != "$name" ]; then
+        echo $newName | sudo tee /etc/hostname > /dev/null
+        sudo tee /etc/hosts > /dev/null << _EOF_
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+127.0.1.1       $newName
+_EOF_
+    fi
+}
+
+cecDecide() {
+    echo -n "Checking for cec-client"
+    command -v cec-client >/dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo ", already installed"
+    else
+        echo ", not installed"
+        echo -n "Would you like to install cec-client [Y]"
+        read cecChoice
+        if [ "$cecChoice" = "" ]; then
+            cecChoice="Y"
+        else
+            cecChoice="${cecChoice^^}"
+        fi
+    fi
+}
+
+menu () {
+    selection=0
+
+    while [ true ]; do
+        cat << _EOF_
+Please select one of the following choices:
+    1) Setup a single machine display
+    2) Setup a schedule display
+    3) Setup a lanes display
+_EOF_
+        valid_selection=1
+        read selection
+        case $selection in
+        1 ) 
+            singleMachineDisplay
+            genericSetup
+            break
+        ;;
+        2 ) 
+            scheduleDisplay
+            genericSetup
+            break
+        ;;
+        3 ) 
+            lanesDisplay
+            genericSetup
+            break
+        ;;
+        * ) 
+            echo "Invalid Choice"
+            echo 
+        esac
+    done
+}
+
+genericSetup() {
+    
+    echo Updating apt-get
+    sudo apt-get update  #&>/dev/null
+    if [ $? != 0 ]; then
+        echo Error updating apt-get. >&2
+        exit 2
+    fi
+    echo Installing prerequisites
+    sudo apt-get install -y iceweasel unclutter #&>/dev/null
+    if [ $? != 0 ]; then
+        echo Error installing prerequisites. >&2
+        exit 3
+    fi
+    
+    if [ "$cecChoice" = "Y" ]; then
+        cecInstall
+    fi
+    
+    echo Configuring autostart
+    tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@xset s noblank
+@xset s off
+@xset -dpms
+apt-get install iceweasel
+apt-get install unclutter
+unclutter -display :0 -noevents -grab
+@iceweasel $url
+_EOF_
+
+}
+
+cecInstall() {
+    echo Installing cec-client
+    #https://github.com/Pulse-Eight/libcec
+    sudo apt-get install cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
+    cd
+    git clone https://github.com/Pulse-Eight/platform.git
+    mkdir platform/build
+    cd platform/build
+    cmake ..
+    make
+    sudo make install
+    cd
+    git clone https://github.com/Pulse-Eight/libcec.git
+    mkdir libcec/build
+    cd libcec/build
+    cmake -DRPI_INCLUDE_DIR=/opt/vc/include -DRPI_LIB_DIR=/opt/vc/lib ..
+    make -j4
+    sudo make install
+    sudo ldconfig
+}
+
+singleMachineDisplay () {
+    echo ------------------------ SINGLE MACHINE DISPLAY SETUP -------------------------
+    echo -n "Enter the two character machine code: "
+    read machine
+    url="$host/${machine^^}"
+}
+
+scheduleDisplay () {
+    echo --------------------------- SCHEDULE DISPLAY SETUP ----------------------------
+    save=
+    until [ "${save^^}" = "S" ]; do
+        machines=""
+        echo Enter the machine codes for the machines to display
+        echo Hit enter after each, a blank line will stop input
+        read machine
+        until [ "$machine" = "" ]; do
+            machines="$machines$machine,"
+            read machine
+        done
+        echo "You have entered \"${machines^^}\""
+        echo -n "Would you like to save this (S) or re-enter (R) choices [S]: "
+        read save
+        if [ "$save" = "" ]; then 
+            save="S" 
+        fi
+    done
+    url="$host/${machines^^}"
+}
+
+lanesDisplay () {
+    echo ---------------------------- LANES DISPLAY SETUP ------------------------------
+    echo "lanesDisplay stub"
+}
+#Actually run the main function
+main
