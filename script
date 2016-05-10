@@ -98,32 +98,38 @@ _EOF_
 }
 
 genericSetup() {
+    command -v iceweasel >/dev/null 2>&1
+    hasIceweasel=$?
+    command -v iceweasel >/dev/null 2>&1
+    hasUnclutter=$?
     
-    echo Updating apt-get
-    sudo apt-get update  #&>/dev/null
-    if [ $? != 0 ]; then
-        echo Error updating apt-get. >&2
-        exit 2
-    fi
-    echo Installing prerequisites
-    sudo apt-get install -y iceweasel unclutter #&>/dev/null
-    if [ $? != 0 ]; then
-        echo Error installing prerequisites. >&2
-        exit 3
-    fi
-    
-    if [ "$cecChoice" = "Y" ]; then
-        cecInstall
+    if [ "$hasIceweasel" != "0" ] || [ "$hasUnclutter" != "0" ] || [ "$cecChoice" = "Y" ]; then
+        echo Updating apt-get
+        sudo apt-get update  #&>/dev/null
+        if [ $? != 0 ]; then
+            echo Error updating apt-get. >&2
+            exit 2
+        fi
+        echo Installing prerequisites
+        sudo apt-get install -y iceweasel unclutter #&>/dev/null
+        if [ $? != 0 ]; then
+            echo Error installing prerequisites. >&2
+            exit 3
+        fi
+        
+        if [ "$cecChoice" = "Y" ]; then
+            cecInstall
+        fi    
     fi
     
     echo Install Profile
     if [ ! -f kioskProfile.tar ]; then
         wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar
+        if [ ! -d ~/kioskProfile ]; then
+            mkdir ~/kioskProfile
+        fi
+        tar -xf kioskProfile.tar -C ~/kioskProfile
     fi
-    if [ ! -d kioskProfile ]; then
-        mkdir ~/kioskProfile
-    fi
-    tar -xf kioskProfile.tar -C ~/kioskProfile
     
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt
