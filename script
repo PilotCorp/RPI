@@ -128,11 +128,12 @@ genericSetup() {
     echo Install Profile
     if [ ! -f kioskProfile.tar ]; then
         wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar
-        if [ ! -d ~/kioskProfile ]; then
-            mkdir ~/kioskProfile
-        fi
-        tar -xf kioskProfile.tar -C ~/kioskProfile
     fi
+    if [ -d ~/kioskProfile ]; then
+        rm -rf ~/kioskProfile
+    fi
+    mkdir ~/kioskProfile
+    tar -xf kioskProfile.tar -C ~/kioskProfile
     
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt
