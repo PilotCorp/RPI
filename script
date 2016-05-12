@@ -114,7 +114,7 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y iceweasel unclutter #&>/dev/null
+        sudo apt-get install -y iceweasel unclutter vim #&>/dev/null
         if [ $? != 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
