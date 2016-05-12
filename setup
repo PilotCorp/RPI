@@ -1,0 +1,4 @@
+wget signs.pilotpen.com/script -O script
+chmod 755 script
+./script
+
