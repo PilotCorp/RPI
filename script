@@ -98,7 +98,10 @@ _EOF_
 }
 
 genericSetup() {
-    command -v iceweasel >/dev/null 2>&1
+  #Set TimeZone
+  sudo cp /usr/share/zoneinfo/US/Eastern /etc/localtime
+
+  command -v iceweasel >/dev/null 2>&1
     hasIceweasel=$?
     command -v iceweasel >/dev/null 2>&1
     hasUnclutter=$?
