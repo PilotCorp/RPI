@@ -1,6 +1,7 @@
 #!/bin/bash
 #Raspberry Pi setup script
 host="http://signs.pilotpen.com"
+rotation=0
 main () {
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
@@ -76,7 +77,6 @@ Please select one of the following choices:
     2) Setup a schedule display
     3) Setup a lanes display
 _EOF_
-        valid_selection=1
         read selection
         case $selection in
         1 ) 
@@ -141,6 +141,11 @@ genericSetup() {
     
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt
+
+    echo Setting Rotation
+    echo | sudo tee -a /boot/config.txt > /dev/null
+    echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
+    echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
     
     echo Configuring autostart
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
@@ -205,6 +210,7 @@ scheduleDisplay () {
             save="S" 
         fi
     done
+    pickRotation 
     url="$host/${machines^^}"
 }
 
@@ -212,5 +218,40 @@ lanesDisplay () {
     echo ---------------------------- LANES DISPLAY SETUP ------------------------------
     echo "lanesDisplay stub"
 }
+
+pickRotation () {
+  while [ true ]; do
+    cat << _EOF_
+Please select one of the following screen rotations:
+    0  ) Normal landscape
+    90 ) 90 degrees counter-clockwise, portait
+    180) Upside down landscape
+    270) 270 degress counter-clockwise/90degress clockwise, portait
+_EOF_
+    read selection
+    case $selection in
+    0 )
+        rotation=0
+        break
+    ;;
+    90 )
+        rotation=1
+        break
+    ;;
+    180 )
+        rotation=2
+        break
+    ;;
+    270 )
+        rotation=3
+        break
+    ;;
+    * )
+        echo "Invalid Choice"
+        echo
+    esac
+  done
+}
+
 #Actually run the main function
 main
