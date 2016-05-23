@@ -3,7 +3,7 @@
 host="http://signs.pilotpen.com"
 rotation=0
 main () {
-    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/wgetProgress -O wgetProgess > /dev/null 2>&1
+    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/wgetProgress -O wgetProgress > /dev/null 2>&1
     chmod 755 wgetProgress
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
