@@ -2,8 +2,8 @@
 #Raspberry Pi setup script
 
 echo "Auto Update"
-wget https://raw.githubusercontent.com/PilotCorp/RPI/master/setup -O setup > /dev/null 2>&1
-wget signs.pilotpen.com/script -O script > /dev/null 2>&1
+wget https://raw.githubusercontent.com/PilotCorp/RPI/master/setup -O setup -q --progress=bar --show-progress
+wget signs.pilotpen.com/script -O script -q --progress=bar --show-progress
 chmod 755 script
 ./script
 

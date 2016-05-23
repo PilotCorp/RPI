@@ -3,8 +3,6 @@
 host="http://signs.pilotpen.com"
 rotation=0
 main () {
-    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/wgetProgress -O wgetProgress > /dev/null 2>&1
-    chmod 755 wgetProgress
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
         exit 1
@@ -133,7 +131,7 @@ genericSetup() {
     
     echo Install Profile
     if [ ! -f kioskProfile.tar ]; then
-        (wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar 2>&1) | ./wgetProgress
+        wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar -q --progress=bar --show-progress
     fi
     if [ -d ~/kioskProfile ]; then
         rm -rf ~/kioskProfile
@@ -142,7 +140,7 @@ genericSetup() {
     tar -xf kioskProfile.tar -C ~/kioskProfile
     
     echo Boot Config
-    (sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt 2>&1) | ./wgetProgress
+    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
 
     echo Setting Rotation
     echo | sudo tee -a /boot/config.txt > /dev/null

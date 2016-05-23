@@ -1,9 +1,0 @@
-while [ true ]; do
-  read -r input
-  progress=`echo $input | awk 'NF=9 {print $7}'`
-  if [ "$progress" = "saved" ]; then
-    echo Downloading: Done
-    break
-  fi
-  echo -ne Downloading: $progress '\r'
-done
