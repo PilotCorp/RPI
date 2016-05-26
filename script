@@ -17,9 +17,11 @@ main () {
         echo "Rebooting"
         sudo reboot
     else
-        killall -s 9 iceweasel
-        export DISPLAY=:0
-        (iceweasel $url --profile kioskProfile &) > /dev/null 2>&1
+        if pgrep iceweasel > /dev/null; then
+            wget -q http://signs.pilotpen.com/api/redirect/$(/bin/hostname -I|awk '{print $1}')/$(echo $url | awk 'BEGIN {FS="/"} {print $NF}')
+        else
+            (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
+        fi
     fi
 }
 
