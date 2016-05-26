@@ -109,8 +109,12 @@ genericSetup() {
     hasIceweasel=$?
     command -v unclutter >/dev/null 2>&1
     hasUnclutter=$?
+    command -v php > /dev/null 2>&1
+    hasPhp=$?
+
+    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0))
     
-    if [ "$hasIceweasel" != "0" ] || [ "$hasUnclutter" != "0" ] || [ "$cecChoice" = "Y" ]; then
+    if [ $allInstalled -ne 1 ] || [ "$cecChoice" = "Y" ]; then
         echo Updating apt-get
         sudo apt-get update  #&>/dev/null
         if [ $? != 0 ]; then
@@ -118,7 +122,7 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y iceweasel unclutter vim #&>/dev/null
+        sudo apt-get install -y iceweasel unclutter php5 libapache2-mod-php5 vim #&>/dev/null
         if [ $? != 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
