@@ -18,7 +18,7 @@ main () {
         sudo reboot
     else
         if pgrep iceweasel > /dev/null; then
-            wget -q http://signs.pilotpen.com/api/redirect/$(/bin/hostname -I|awk '{print $1}')/$(echo $url | awk 'BEGIN {FS="/"} {print $NF}')
+            wget -q http://signs.pilotpen.com/api/redirect/$(/bin/hostname -I|awk '{print $1}')/$(echo $url | awk 'BEGIN {FS="/"} {print $NF}') -O /tmp/wget-trash
         else
             (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
         fi
