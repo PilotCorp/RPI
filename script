@@ -129,8 +129,12 @@ genericSetup() {
     hasUnclutter=$?
     command -v php > /dev/null 2>&1
     hasPhp=$?
+    apachectl -t -D DUMP_MODULES 2>&1 | grep rewrite_module > /dev/null
+    hasRewriteModule=$?
+    apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
+    hasHeadersModule=$?
 
-    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0))
+    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0))
     
     if [ $allInstalled -ne 1 ] || [ "$cecChoice" = "Y" ]; then
         echo Updating apt-get
