@@ -8,6 +8,7 @@ main () {
         exit 1
     fi
 
+    keyboard
     hostname
     cecDecide
     reboot
@@ -23,6 +24,21 @@ main () {
             (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
         fi
     fi
+}
+
+keyboard() {
+    sudo tee /etc/default/keyboard > /dev/null << _EOF_
+# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="pc105"
+XKBLAYOUT="us"
+XKBVARIANT=""
+XKBOPTIONS=""
+
+BACKSPACE="guess"
+_EOF_
 }
 
 hostname() {
