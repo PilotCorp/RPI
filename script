@@ -168,6 +168,9 @@ genericSetup() {
     mkdir ~/kioskProfile
     tar -xf kioskProfile.tar -C ~/kioskProfile
     
+    echo Apache Config
+    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
+    
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
 
