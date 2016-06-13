@@ -190,6 +190,13 @@ unclutter -display :0 -noevents -grab
 @iceweasel $url --profile kioskProfile
 _EOF_
 
+   echo Installing Website
+   webSite
+}
+
+webSite() {
+    wget https://github.com/PilotCorp/ManufacturingSignsHostedHtml/archive/master.zip -O ManufacturingSignsHostedHtml.zip -q --progress=bar --show-progress
+    sudo unzip -ju ManufacturingSignsHostedHtml.zip ManufacturingSignsHostedHtml-master/* -d /var/www/html > /dev/null
 }
 
 cecInstall() {
