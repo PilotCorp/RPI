@@ -170,6 +170,7 @@ genericSetup() {
     
     echo Apache Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
+    sudo service apache2 restart
     
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
