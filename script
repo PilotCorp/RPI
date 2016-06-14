@@ -170,6 +170,8 @@ genericSetup() {
     
     echo Apache Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
+    #run apache as pi user and pi group
+    sudo sed -i s/www-data/pi/g /etc/apache2/envvars
     sudo service apache2 restart
     
     echo Boot Config
