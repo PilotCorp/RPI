@@ -164,6 +164,8 @@ genericSetup() {
     fi
     md5=`md5sum kioskProfile.tar`
     if [ "$md5" != "67377b11c05cfd673ff357a29c6c2c59  kioskProfile.tar" ]; then
+        #If profile update is required, need to kill iceweasel
+        killall -q iceweasel
         wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar -O kioskProfile.tar -q --progress=bar --show-progress
     fi
 
