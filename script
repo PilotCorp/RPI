@@ -129,12 +129,14 @@ genericSetup() {
     hasUnclutter=$?
     command -v php > /dev/null 2>&1
     hasPhp=$?
+    command -v omxplayer > /dev/null 2>&1
+    hasOmx=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep rewrite_module > /dev/null
     hasRewriteModule=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
     hasHeadersModule=$?
 
-    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0))
+    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0))
     
     if [ $allInstalled -ne 1 ] || [ "$cecChoice" = "Y" ]; then
         echo Updating apt-get
@@ -144,7 +146,7 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y iceweasel unclutter php5 libapache2-mod-php5 vim #&>/dev/null
+        sudo apt-get install -y iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer 
         if [ $? != 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
@@ -183,6 +185,10 @@ genericSetup() {
     
     echo Boot Config
     sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
+
+    echo Video Player script
+    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/videoplayer -O /home/pi/videoplayer -q --progress=bar --show-progress
+    chmod 755 /home/pi/videoplayer
 
     echo Setting Rotation
     echo | sudo tee -a /boot/config.txt > /dev/null
