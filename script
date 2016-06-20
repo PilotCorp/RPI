@@ -190,6 +190,9 @@ genericSetup() {
     wget https://raw.githubusercontent.com/PilotCorp/RPI/master/videoplayer -O /home/pi/videoplayer -q --progress=bar --show-progress
     chmod 755 /home/pi/videoplayer
 
+    echo Grabbing Videos
+    php DownloadVideos.php
+
     echo Setting Rotation
     echo | sudo tee -a /boot/config.txt > /dev/null
     echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
