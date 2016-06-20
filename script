@@ -191,6 +191,7 @@ genericSetup() {
     chmod 755 /home/pi/videoplayer
 
     echo Grabbing Videos
+    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/DownloadVideos.php -O DownloadVideos.php -q --progress=bar --show-progress
     php DownloadVideos.php
 
     echo Setting Rotation
