@@ -184,6 +184,8 @@ genericSetup() {
     echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
     
     echo Configuring autostart
+    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/rc.local -O /etc/rc.local -q --progress=bar --show-progress
+
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
@@ -193,18 +195,8 @@ genericSetup() {
 @xset -dpms
 apt-get install iceweasel
 apt-get install unclutter
-
-if [ ! -p /dev/cec ]; then
-  sudo mkfifo /dev/cec
-  sudo chmod 666 /dev/cec
-fi
-(tailf /dev/null > /dev/cec &) > /dev/null
-(cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
-
 unclutter -display :0 -noevents -grab
 iceweasel $url --profile kioskProfile &
-
-echo "on 0" > /dev/cec
 _EOF_
 
    echo Installing Website
