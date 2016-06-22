@@ -202,7 +202,9 @@ fi
 (cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
 
 unclutter -display :0 -noevents -grab
-@iceweasel $url --profile kioskProfile
+iceweasel $url --profile kioskProfile &
+
+echo "on 0" > /dev/cec
 _EOF_
 
    echo Installing Website
