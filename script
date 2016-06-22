@@ -10,7 +10,6 @@ main () {
 
     keyboard
     hostname
-    cecDecide
     reboot
     menu
     
@@ -55,23 +54,6 @@ ff02::2         ip6-allrouters
 
 127.0.1.1       $newName
 _EOF_
-    fi
-}
-
-cecDecide() {
-    echo -n "Checking for cec-client"
-    command -v cec-client >/dev/null 2>&1
-    if [ $? = 0 ]; then
-        echo ", already installed"
-    else
-        echo ", not installed"
-        echo -n "Would you like to install cec-client [Y]: "
-        read cecChoice
-        if [ "$cecChoice" = "" ]; then
-            cecChoice="Y"
-        else
-            cecChoice="${cecChoice^^}"
-        fi
     fi
 }
 
@@ -123,6 +105,8 @@ genericSetup() {
     #Set TimeZone
     sudo cp /usr/share/zoneinfo/US/Eastern /etc/localtime
 
+    command -v cec-client >/dev/null 2>&1
+    hasCec=$?
     command -v iceweasel >/dev/null 2>&1
     hasIceweasel=$?
     command -v unclutter >/dev/null 2>&1
@@ -136,18 +120,18 @@ genericSetup() {
     apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
     hasHeadersModule=$?
 
-    allInstalled=$((hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0))
+    allInstalled=$((hasCec == 0 && hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0))
     
-    if [ $allInstalled -ne 1 ] || [ "$cecChoice" = "Y" ]; then
+    if [ $allInstalled -ne 1 ]; then
         echo Updating apt-get
         sudo apt-get update  #&>/dev/null
-        if [ $? != 0 ]; then
+        if [ $? -ne 0 ]; then
             echo Error updating apt-get. >&2
             exit 2
         fi
         echo Installing prerequisites
         sudo apt-get install -y iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer 
-        if [ $? != 0 ]; then
+        if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
         fi
@@ -155,7 +139,7 @@ genericSetup() {
         sudo a2enmod rewrite headers > /dev/null
         sudo service apache2 restart
 
-        if [ "$cecChoice" = "Y" ]; then
+        if [ $hasCec -ne 0 ]; then
             cecInstall
         fi    
     fi
