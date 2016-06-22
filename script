@@ -183,6 +183,12 @@ genericSetup() {
     echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
     echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
     
+    echo Setting up cec pipe
+    if [ ! -p /dev/cec ]; then
+      sudo mkfifo /dev/cec
+      sudo chmod 666 /dev/cec
+    fi
+
     echo Configuring autostart
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
 @lxpanel --profile LXDE-pi
@@ -194,6 +200,8 @@ genericSetup() {
 apt-get install iceweasel
 apt-get install unclutter
 unclutter -display :0 -noevents -grab
+(tailf /dev/null > /dev/cec &) > /dev/null
+(cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
 @iceweasel $url --profile kioskProfile
 _EOF_
 
