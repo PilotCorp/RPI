@@ -24,7 +24,5 @@ fi
 (tailf /dev/null > /dev/cec &) > /dev/null
 (cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
 
-echo 'txn 40:04' > dev/cec
-
 exit 0
 
