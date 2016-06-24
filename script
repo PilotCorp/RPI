@@ -12,7 +12,7 @@ main () {
     keyboard
     hostname
     reboot
-    if [ $silent -ne 1 ];
+    if [ $silent -ne 1 ]; then
       menu
     else
       genericSetup
