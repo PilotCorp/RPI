@@ -7,5 +7,5 @@ wget https://raw.githubusercontent.com/PilotCorp/RPI/master/setup -q --progress=
 wget signs.pilotpen.com/script -q --progress=bar --show-progress -O script
 
 chmod 755 script
-./script
+./script "$@"
 

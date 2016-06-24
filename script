@@ -8,10 +8,15 @@ main () {
         exit 1
     fi
 
+    parseParameters
     keyboard
     hostname
     reboot
-    menu
+    if [ $silent -ne 1 ];
+      menu
+    else
+      genericSetup
+    fi
     
     if [ "$rebootChoice" = "Y" ]; then
         echo "Rebooting"
@@ -23,6 +28,20 @@ main () {
             (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
         fi
     fi
+}
+
+parseParameters() {
+  silent=0
+  while [ "$1" != "" ]; do
+    case $1 in
+      -s | --silent )
+        silent=1
+        url=`cat /var/local/url`
+        rotation=`cat /boot/config.txt | grep display_rotate | awk 'BEGIN{FS="="} {print $2}'`
+        ;;
+    esac
+    shift
+  done
 }
 
 keyboard() {
@@ -43,7 +62,9 @@ _EOF_
 hostname() {
     name=`cat /etc/hostname`
     echo -n "Hostname [$name]: "
-    read newName
+    if [ $silent -ne 1 ]; then
+      read newName
+    fi
     if [ "$newName" != "" ] && [ "$newName" != "$name" ]; then
         echo $newName | sudo tee /etc/hostname > /dev/null
         sudo tee /etc/hosts > /dev/null << _EOF_
@@ -59,7 +80,11 @@ _EOF_
 
 reboot() {
     echo -n "Reboot after setup [Y]: "
-    read rebootChoice
+    if [ $silent -ne 1]; then
+      read rebootChoice
+    else
+      rebootChoice="N"
+    fi
     if [ "$rebootChoice" = "" ]; then
         rebootChoice="Y"
     else
@@ -196,8 +221,10 @@ genericSetup() {
 apt-get install iceweasel
 apt-get install unclutter
 unclutter -display :0 -noevents -grab
-iceweasel $url --profile kioskProfile &
+/home/pi/setup --silent
 _EOF_
+
+   echo $url | sudo tee /var/local/url > /dev/null 
 
    echo Installing Website
    webSite
