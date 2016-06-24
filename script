@@ -288,7 +288,7 @@ scheduleDisplay () {
 
 lanesDisplay () {
     echo ---------------------------- LANES DISPLAY SETUP ------------------------------
-    echo "lanesDisplay stub"
+    url="$host/Lanes"
 }
 
 pickRotation () {
