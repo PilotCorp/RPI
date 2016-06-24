@@ -4,7 +4,7 @@
 echo "Auto Update"
 wget https://raw.githubusercontent.com/PilotCorp/RPI/master/setup -q --progress=bar --show-progress -O setup
 
-wget signs.pilotpen.com/script -q --progress=bar --show-progress -O script
+wget https://raw.githubusercontent.com/PilotCorp/RPI/master/script -q --progress=bar --show-progress -O script
 
 chmod 755 script
 ./script "$@"
