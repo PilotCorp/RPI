@@ -80,7 +80,7 @@ _EOF_
 
 reboot() {
     echo -n "Reboot after setup [Y]: "
-    if [ $silent -ne 1]; then
+    if [ $silent -ne 1 ]; then
       read rebootChoice
     else
       rebootChoice="N"
