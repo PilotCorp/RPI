@@ -62,7 +62,26 @@ BACKSPACE="guess"
 _EOF_
 }
 
+hostnamePre() {
+    name=`cat /etc/hostname`
+    if [ "$name" == "raspberrypi" ] ; then
+        mac=`ifconfig eth0 | awk 'BEGIN{FS=":"} NR==1{print $6$7}'`
+        newName="rpi-$mac"
+        echo $newName | sudo tee /etc/hostname > /dev/null
+        sudo tee /etc/hosts > /dev/null << _EOF_
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+127.0.1.1       $newName
+_EOF_
+    fi
+
+}
+
 hostname() {
+    hostnamePre
     name=`cat /etc/hostname`
     echo -n "Hostname [$name]: "
     if [ $silent -ne 1 ]; then
