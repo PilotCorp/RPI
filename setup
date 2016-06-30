@@ -10,6 +10,9 @@ else
   rm setup.tmp
 fi
 
+#require if tmp is moved, but won't hurt doing it always
+chmod 755 setup
+
 wget https://raw.githubusercontent.com/PilotCorp/RPI/master/script -q --progress=bar --show-progress -O script.tmp
 filesize=`stat --printf="%s" script.tmp`
 if [ $filesize -gt 100 ]; then
