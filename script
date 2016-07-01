@@ -37,7 +37,11 @@ parseParameters() {
     case $1 in
       -s | --silent )
         silent=1
-        url=`cat /var/local/url`
+        if [ -f /var/local/url ]; then
+          url=`cat /var/local/url`
+        else
+          url="http://signs.pilotpen.com/Info"
+        fi
         rotation=`cat /boot/config.txt | grep display_rotate | awk 'BEGIN{FS="="} {print $2}'`
         ;;
       --nokill )
