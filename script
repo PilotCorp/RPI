@@ -8,6 +8,13 @@ main () {
         exit 1
     fi
 
+    if ! ifconfig eth0 | grep "inet addr:" > /dev/null; then
+      sleep 3;
+    fi
+
+    ifconfig eth0 | grep "inet addr:" > /dev/null
+    noEth=$?
+
     parseParameters "$@"
     keyboard
     hostname
@@ -202,7 +209,7 @@ genericSetup() {
         wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar -q --progress=bar --show-progress
     fi
     md5=`md5sum kioskProfile.tar`
-    if [ "$md5" != "67377b11c05cfd673ff357a29c6c2c59  kioskProfile.tar" ]; then
+    if [ "$md5" != "67377b11c05cfd673ff357a29c6c2c59  kioskProfile.tar" && $noEth -ne 1 ]; then
         #If profile update is required, need to kill iceweasel
         killall -q iceweasel
         wget https://raw.githubusercontent.com/PilotCorp/RPI/master/kioskProfile.tar -O kioskProfile.tar -q --progress=bar --show-progress
@@ -215,7 +222,9 @@ genericSetup() {
     tar -xf kioskProfile.tar -C ~/kioskProfile
     
     echo Apache Config
-    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
+    if [ $noEth -ne 1 ]; then
+      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
+    fi
     #run apache as pi user and pi group
     sudo sed -i s/www-data/pi/g /etc/apache2/envvars
     if [ $killApache -eq 1 ]; then
@@ -223,15 +232,21 @@ genericSetup() {
     fi
     
     echo Boot Config
-    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
+    if [ $noEth -ne 1 ]; then
+      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
+    fi
 
     echo Video Player script
-    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/videoplayer -O /home/pi/videoplayer -q --progress=bar --show-progress
+    if [ $noEth -ne 1 ]; then
+      wget https://raw.githubusercontent.com/PilotCorp/RPI/master/videoplayer -O /home/pi/videoplayer -q --progress=bar --show-progress
+    fi
     chmod 755 /home/pi/videoplayer
 
     echo Grabbing Videos
-    wget https://raw.githubusercontent.com/PilotCorp/RPI/master/DownloadVideos.php -O DownloadVideos.php -q --progress=bar --show-progress
-    php DownloadVideos.php
+    if [ $noEth -ne 1 ]; then
+      wget https://raw.githubusercontent.com/PilotCorp/RPI/master/DownloadVideos.php -O DownloadVideos.php -q --progress=bar --show-progress
+      php DownloadVideos.php
+    fi
 
     echo Setting Rotation
     echo | sudo tee -a /boot/config.txt > /dev/null
@@ -239,7 +254,9 @@ genericSetup() {
     echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
     
     echo Configuring autostart
-    sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/rc.local -O /etc/rc.local -q --progress=bar --show-progress
+    if [ $noEth -ne 1 ]; then
+      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/rc.local -O /etc/rc.local -q --progress=bar --show-progress
+    fi
 
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
 @lxpanel --profile LXDE-pi
@@ -259,8 +276,10 @@ _EOF_
 }
 
 webSite() {
-    wget https://github.com/PilotCorp/ManufacturingSignsHostedHtml/archive/master.zip -O ManufacturingSignsHostedHtml.zip -q --progress=bar --show-progress
-    sudo unzip -ju ManufacturingSignsHostedHtml.zip ManufacturingSignsHostedHtml-master/* -d /var/www/html > /dev/null
+    if [ $noEth -ne 1 ]; then
+      wget https://github.com/PilotCorp/ManufacturingSignsHostedHtml/archive/master.zip -O ManufacturingSignsHostedHtml.zip -q --progress=bar --show-progress
+      sudo unzip -ju ManufacturingSignsHostedHtml.zip ManufacturingSignsHostedHtml-master/* -d /var/www/html > /dev/null
+    fi
 }
 
 cecInstall() {
