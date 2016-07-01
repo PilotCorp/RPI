@@ -278,6 +278,8 @@ cecInstall() {
     make -j4
     sudo make install
     sudo ldconfig
+    cd
+    rm -rf libcec
 }
 
 singleMachineDisplay () {
