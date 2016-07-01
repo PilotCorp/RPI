@@ -203,6 +203,10 @@ genericSetup() {
             cecInstall
         fi    
     fi
+
+    cd
+    rm -rf libcec
+    rm -rf platform
     
     echo Install Profile
     if [ ! -f kioskProfile.tar ]; then
@@ -301,8 +305,6 @@ cecInstall() {
     make -j4
     sudo make install
     sudo ldconfig
-    cd
-    rm -rf libcec
 }
 
 singleMachineDisplay () {
