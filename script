@@ -244,8 +244,6 @@ genericSetup() {
 @xset s noblank
 @xset s off
 @xset -dpms
-apt-get install iceweasel
-apt-get install unclutter
 unclutter -display :0 -noevents -grab
 /home/pi/setup --silent
 _EOF_
