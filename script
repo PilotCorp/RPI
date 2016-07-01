@@ -191,7 +191,7 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer 
+        sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer 
         if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
@@ -292,7 +292,8 @@ webSite() {
 cecInstall() {
     echo Installing cec-client
     #https://github.com/Pulse-Eight/libcec
-    sudo apt-get install -y cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
+    sudo apt-get update
+    sudo apt-get install -y --force-yes cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
     cd
     git clone https://github.com/Pulse-Eight/platform.git
     mkdir platform/build
