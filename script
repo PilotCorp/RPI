@@ -50,6 +50,9 @@ parseParameters() {
           url="http://signs.pilotpen.com/Info"
         fi
         rotation=`cat /boot/config.txt | grep display_rotate | awk 'BEGIN{FS="="} {print $2}'`
+        if [ "$rotation" == "" ]; then
+           rotation=0;
+        fi
         ;;
       --nokill )
         killApache=0
