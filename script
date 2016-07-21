@@ -180,8 +180,10 @@ genericSetup() {
     hasRewriteModule=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
     hasHeadersModule=$?
+    apachectl -t -D DUMP_MODULES 2>&1 | grep ssl_module > /dev/null
+    hasSslModule=$?
 
-    allInstalled=$((hasCec == 0 && hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0))
+    allInstalled=$((hasCec == 0 && hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0 && hasSslModule == 0))
     
     if [ $allInstalled -ne 1 ]; then
         echo Updating apt-get
@@ -197,7 +199,7 @@ genericSetup() {
             exit 3
         fi
 
-        sudo a2enmod rewrite headers > /dev/null
+        sudo a2enmod rewrite headers ssl > /dev/null
         if [ $killApache -eq 1 ]; then
           sudo service apache2 restart
         fi
