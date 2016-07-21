@@ -234,7 +234,7 @@ genericSetup() {
     if [ $noEth -ne 1 ]; then
       sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/apache2.conf -O /etc/apache2/apache2.conf -q --progress=bar --show-progress
       wget https://signs.pilotpen.com/Cert/domain.cer -O /home/pi/domain.cer -q --progress=bar --show-progress
-      wget https://signs.pilotpen.com/Cert/domain.key -O /home/pi/domain.key -q --progress=bar --show-progress
+      wget https://signs.pilotpen.com/Cert/domain.key.txt -O /home/pi/domain.key -q --progress=bar --show-progress
       wget https://signs.pilotpen.com/Cert/domain-ca.crt -O /home/pi/domain-ca.crt -q --progress=bar --show-progress
       sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/000-default.conf -O /etc/apache2/sites-available/000-default.conf -q --progress=bar --show-progress
     fi
