@@ -29,6 +29,9 @@ main () {
         echo "Rebooting"
         sudo reboot
     else
+        echo "on 0" > /dev/cec
+        sleep 3
+        echo "as" > /dev/cec
         if pgrep iceweasel > /dev/null; then
             wget -q http://signs.pilotpen.com/api/redirect/$(/bin/hostname -I|awk '{print $1}')/$(echo $url | awk 'BEGIN {FS="/"} {print $NF}') -O /tmp/wget-trash
         else
