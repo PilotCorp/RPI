@@ -179,6 +179,8 @@ genericSetup() {
     hasPhp=$?
     command -v omxplayer > /dev/null 2>&1
     hasOmx=$?
+    command -v x11vnc > /dev/null 2>&1
+    hasVnc = $?
     apachectl -t -D DUMP_MODULES 2>&1 | grep rewrite_module > /dev/null
     hasRewriteModule=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
@@ -186,7 +188,7 @@ genericSetup() {
     apachectl -t -D DUMP_MODULES 2>&1 | grep ssl_module > /dev/null
     hasSslModule=$?
 
-    allInstalled=$((hasCec == 0 && hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0 && hasSslModule == 0))
+    allInstalled=$((hasCec == 0 && hasIceweasel == 0 && hasUnclutter == 0 && hasPhp == 0 && hasRewriteModule == 0 && hasHeadersModule == 0 && hasOmx == 0 && hasSslModule == 0 && hasVnc == 0))
     
     if [ $allInstalled -ne 1 ]; then
         echo Updating apt-get
@@ -196,7 +198,7 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer 
+        sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
         if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
@@ -246,6 +248,12 @@ genericSetup() {
     if [ $killApache -eq 1 ]; then
       sudo service apache2 restart
     fi
+
+    echo VNC Password
+    if [ $noEth -ne 1 ]; then
+      mkdir -p ~/.vnc
+      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/passwd -O ~/.vnc/passwd -q --progress=bar --show-progress
+    fi
     
     echo Boot Config
     if [ $noEth -ne 1 ]; then
@@ -283,6 +291,11 @@ genericSetup() {
 @xset -dpms
 unclutter -display :0 -noevents -grab
 /home/pi/setup --silent
+_EOF_
+
+   tee ~/.xsessionrc < /dev/null << _EOF_
+# Start X11VNC
+x11vnc -bg -nevershared -forever -tightfilexfer -display :0 -rfbauth ~/.vnc/passwd
 _EOF_
 
    echo $url | sudo tee /var/local/url > /dev/null 
