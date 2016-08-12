@@ -180,7 +180,7 @@ genericSetup() {
     command -v omxplayer > /dev/null 2>&1
     hasOmx=$?
     command -v x11vnc > /dev/null 2>&1
-    hasVnc = $?
+    hasVnc=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep rewrite_module > /dev/null
     hasRewriteModule=$?
     apachectl -t -D DUMP_MODULES 2>&1 | grep headers_module > /dev/null
