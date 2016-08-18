@@ -293,7 +293,7 @@ unclutter -display :0 -noevents -grab
 /home/pi/setup --silent
 _EOF_
 
-   tee ~/.xsessionrc < /dev/null << _EOF_
+   tee ~/.xsessionrc > /dev/null << _EOF_
 # Start X11VNC
 x11vnc -bg -nevershared -forever -tightfilexfer -display :0 -rfbauth ~/.vnc/passwd
 _EOF_
