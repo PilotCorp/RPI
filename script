@@ -289,9 +289,13 @@ genericSetup() {
     fi
 
     echo Setting Rotation
-    echo | sudo tee -a /boot/config.txt > /dev/null
-    echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
-    echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
+    if grep -E "display_rotate=[0-9]+" /boot/config.txt > /dev/null; then
+        sudo sed -i s/display_rotate=[0-9]/display_rotate=$rotation/ /boot/config
+    else
+        echo | sudo tee -a /boot/config.txt > /dev/null
+        echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
+        echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
+    fi
     
     echo Configuring autostart
     if [ $noEth -ne 1 ]; then
