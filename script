@@ -317,9 +317,9 @@ _EOF_
       fi
     fi
 
-    tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
-@lxpanel --profile LXDE-pi
-@pcmanfm --desktop --profile LXDE-pi
+    autostart="/home/pi/.config/lxsession/LXDE-pi/autostart"
+    if ! grep "home/pi/setup" $autostart > /dev/null; then
+        tee -a $autostart > /dev/null << _EOF_
 @xscreensaver -no-splash
 @xset s noblank
 @xset s off
@@ -327,6 +327,7 @@ _EOF_
 unclutter -display :0 -noevents -grab
 /home/pi/setup --silent
 _EOF_
+    fi
 
    tee ~/.xsessionrc > /dev/null << _EOF_
 # Start X11VNC
