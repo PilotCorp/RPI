@@ -299,7 +299,22 @@ genericSetup() {
     
     echo Configuring autostart
     if [ $noEth -ne 1 ]; then
-      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/rc.local -O /etc/rc.local -q --progress=bar --show-progress
+      cecCountInRcLocal=`grep cec /etc/rc.local | wc | awk '{print $1}'`
+      if [ $cecCountInRcLocal -lt 5 ]; then
+        sudo sed -i '/^exit 0/d' /etc/rc.local
+
+        sudo tee -a /etc/rc.local > /dev/null << _EOF_
+if [ ! -p /dev/cec ]; then
+  sudo mkfifo /dev/cec
+  sudo chmod 666 /dev/cec
+fi
+(tailf /dev/null > /dev/cec &) > /dev/null
+(cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
+
+exit 0
+_EOF_
+        
+      fi
     fi
 
     tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
