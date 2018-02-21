@@ -5,12 +5,15 @@ rotation=0
 noEth=0
 killApache=0
 silent=0
+kernel=0
 
 main () {
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
         exit 1
     fi
+
+    kernel=`uname -r | grep -E "^[0-9]+\.[0-9]+" -o`
 
     if ! isEth0Connected; then
       sleep 3;
@@ -217,7 +220,11 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
+        if [ "$kernel" == "4.4" ]; then
+            sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
+        else
+            sudo apt-get install -y --force-yes iceweasel unclutter php7.0 vim omxplayer x11vnc
+        fi
         if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
