@@ -2,17 +2,18 @@
 #Raspberry Pi setup script
 host="http://signs.pilotpen.com"
 rotation=0
+noEth=0
 main () {
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
         exit 1
     fi
 
-    if ! ifconfig eth0 | grep "inet addr:" > /dev/null; then
+    if ! isEth0Connected; then
       sleep 3;
     fi
 
-    ifconfig eth0 | grep "inet addr:" > /dev/null
+    isEth0Connected
     noEth=$?
 
     parseParameters "$@"
@@ -38,6 +39,21 @@ main () {
             (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
         fi
     fi
+}
+
+isEth0Connected() {
+    #Check for kernel < 4.9
+    if ifconfig eth0 | grep "inet addr:" > /dev/null; then
+      return 0;
+    fi
+
+    #Check for kernel >= 4.9
+    if (ifconfig eth0 | grep "inet " | grep "netmask " | grep "broadcast " > /dev/null) && (ifconfig eth0 | grep "inet6 " > /dev/null); then
+      return 0;
+    fi
+
+    #Not connected
+    return 1;
 }
 
 parseParameters() {
