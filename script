@@ -270,11 +270,6 @@ genericSetup() {
       mkdir -p ~/.vnc
       sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/passwd -O ~/.vnc/passwd -q --progress=bar --show-progress
     fi
-    
-    echo Boot Config
-    if [ $noEth -ne 1 ]; then
-      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
-    fi
 
     echo Video Player script
     if [ $noEth -ne 1 ]; then
