@@ -2,17 +2,24 @@
 #Raspberry Pi setup script
 host="http://signs.pilotpen.com"
 rotation=0
+noEth=0
+killApache=0
+silent=0
+kernel=0
+
 main () {
     if [ $(id -u) = "0" ]; then
         echo You cannot be root to run this script >&2
         exit 1
     fi
 
-    if ! ifconfig eth0 | grep "inet addr:" > /dev/null; then
+    kernel=`uname -r | grep -E "^[0-9]+\.[0-9]+" -o`
+
+    if ! isEth0Connected; then
       sleep 3;
     fi
 
-    ifconfig eth0 | grep "inet addr:" > /dev/null
+    isEth0Connected
     noEth=$?
 
     parseParameters "$@"
@@ -38,6 +45,21 @@ main () {
             (iceweasel $url --display=:0 --profile kioskProfile &) > /dev/null 2>&1
         fi
     fi
+}
+
+isEth0Connected() {
+    #Check for kernel < 4.9
+    if ifconfig eth0 | grep "inet addr:" > /dev/null; then
+      return 0;
+    fi
+
+    #Check for kernel >= 4.9
+    if (ifconfig eth0 | grep "inet " | grep "netmask " | grep "broadcast " > /dev/null) && (ifconfig eth0 | grep "inet6 " > /dev/null); then
+      return 0;
+    fi
+
+    #Not connected
+    return 1;
 }
 
 parseParameters() {
@@ -82,7 +104,7 @@ _EOF_
 hostnamePre() {
     name=`cat /etc/hostname`
     if [ "$name" == "raspberrypi" ] ; then
-        mac=`ifconfig eth0 | awk 'BEGIN{FS=":"} NR==1{print $6$7}'`
+        mac=`ifconfig eth0 | grep -E "([a-f0-9]{2}\:){5}[a-f0-9]{2}" -o | awk 'BEGIN{FS=":"} {print $5$6}'`
         newName="rpi-$mac"
         echo $newName | sudo tee /etc/hostname > /dev/null
         sudo tee /etc/hosts > /dev/null << _EOF_
@@ -198,7 +220,11 @@ genericSetup() {
             exit 2
         fi
         echo Installing prerequisites
-        sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
+        if [ "$kernel" == "4.4" ]; then
+            sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
+        else
+            sudo apt-get install -y --force-yes iceweasel unclutter php7.0 vim omxplayer x11vnc
+        fi
         if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
             exit 3
@@ -254,11 +280,6 @@ genericSetup() {
       mkdir -p ~/.vnc
       sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/passwd -O ~/.vnc/passwd -q --progress=bar --show-progress
     fi
-    
-    echo Boot Config
-    if [ $noEth -ne 1 ]; then
-      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/config.txt -O /boot/config.txt -q --progress=bar --show-progress
-    fi
 
     echo Video Player script
     if [ $noEth -ne 1 ]; then
@@ -273,18 +294,37 @@ genericSetup() {
     fi
 
     echo Setting Rotation
-    echo | sudo tee -a /boot/config.txt > /dev/null
-    echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
-    echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
+    if grep -E "display_rotate=[0-9]+" /boot/config.txt > /dev/null; then
+        sudo sed -i s/display_rotate=[0-9]/display_rotate=$rotation/ /boot/config
+    else
+        echo | sudo tee -a /boot/config.txt > /dev/null
+        echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
+        echo "display_rotate="$rotation | sudo tee -a /boot/config.txt > /dev/null
+    fi
     
     echo Configuring autostart
     if [ $noEth -ne 1 ]; then
-      sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/master/rc.local -O /etc/rc.local -q --progress=bar --show-progress
+      cecCountInRcLocal=`grep cec /etc/rc.local | wc | awk '{print $1}'`
+      if [ $cecCountInRcLocal -lt 5 ]; then
+        sudo sed -i '/^exit 0/d' /etc/rc.local
+
+        sudo tee -a /etc/rc.local > /dev/null << _EOF_
+if [ ! -p /dev/cec ]; then
+  sudo mkfifo /dev/cec
+  sudo chmod 666 /dev/cec
+fi
+(tailf /dev/null > /dev/cec &) > /dev/null
+(cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
+
+exit 0
+_EOF_
+        
+      fi
     fi
 
-    tee ~/.config/lxsession/LXDE-pi/autostart  > /dev/null << _EOF_
-@lxpanel --profile LXDE-pi
-@pcmanfm --desktop --profile LXDE-pi
+    autostart="/home/pi/.config/lxsession/LXDE-pi/autostart"
+    if ! grep "home/pi/setup" $autostart > /dev/null; then
+        tee -a $autostart > /dev/null << _EOF_
 @xscreensaver -no-splash
 @xset s noblank
 @xset s off
@@ -292,6 +332,7 @@ genericSetup() {
 unclutter -display :0 -noevents -grab
 /home/pi/setup --silent
 _EOF_
+    fi
 
    tee ~/.xsessionrc > /dev/null << _EOF_
 # Start X11VNC
