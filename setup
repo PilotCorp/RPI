@@ -2,7 +2,7 @@
 #Raspberry Pi setup script
 
 echo "Auto Update"
-wget https://raw.githubusercontent.com/PilotCorp/RPI/master/setup -q --progress=bar --show-progress -O setup.tmp
+wget https://raw.githubusercontent.com/PilotCorp/RPI/develop/setup -q --progress=bar --show-progress -O setup.tmp
 filesize=`stat --printf="%s" setup.tmp`
 if [ $filesize -gt 100 ]; then
   mv setup.tmp setup
@@ -13,7 +13,7 @@ fi
 #require if tmp is moved, but won't hurt doing it always
 chmod 755 setup
 
-wget https://raw.githubusercontent.com/PilotCorp/RPI/master/script -q --progress=bar --show-progress -O script.tmp
+wget https://raw.githubusercontent.com/PilotCorp/RPI/develop/script -q --progress=bar --show-progress -O script.tmp
 filesize=`stat --printf="%s" script.tmp`
 if [ $filesize -gt 100 ]; then
   mv script.tmp script
