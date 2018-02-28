@@ -295,7 +295,7 @@ genericSetup() {
 
     echo Setting Rotation
     if grep -E "display_rotate=[0-9]+" /boot/config.txt > /dev/null; then
-        sudo sed -i s/display_rotate=[0-9]/display_rotate=$rotation/ /boot/config
+        sudo sed -i s/display_rotate=[0-9]/display_rotate=$rotation/ /boot/config.txt
     else
         echo | sudo tee -a /boot/config.txt > /dev/null
         echo "#Setting Roation" | sudo tee -a /boot/config.txt > /dev/null
