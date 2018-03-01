@@ -355,8 +355,10 @@ webSite() {
 cecInstall() {
     echo Installing cec-client
     #https://github.com/Pulse-Eight/libcec
+    #https://github.com/Pulse-Eight/libcec/blob/master/docs/README.raspberrypi.md
     sudo apt-get update
-    sudo apt-get install -y --force-yes cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
+    sudo apt-get install -y cmake liblockdev1-dev libudev-dev libxrandr-dev python-dev swig
+    sudo apt-get install -y cmake libudev-dev libxrandr-dev python-dev swig
     cd
     git clone https://github.com/Pulse-Eight/platform.git
     mkdir platform/build
