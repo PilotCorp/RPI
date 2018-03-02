@@ -313,7 +313,7 @@ if [ ! -p /dev/cec ]; then
   sudo mkfifo /dev/cec
   sudo chmod 666 /dev/cec
 fi
-(tailf /dev/null > /dev/cec &) > /dev/null
+(tail -f /dev/null > /dev/cec &) > /dev/null
 (cat /dev/cec | cec-client -o RPI -t p &) > /dev/null
 
 exit 0
