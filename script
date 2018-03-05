@@ -219,6 +219,19 @@ genericSetup() {
             echo Error updating apt-get. >&2
             exit 2
         fi
+        
+        #Install/ensure all GUI components are installed
+        #https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=133691
+        sudo apt-get install --no-install-recommends xserver-xorg
+        sudo apt-get install --no-install-recommends xinit
+        sudo apt-get install raspberrypi-ui-mods
+        sudo apt-get install --no-install-recommends raspberrypi-ui-mods lxterminal gvfs
+        
+        #Login as pi GUI
+        sudo systemctl set-default graphical.target
+        sudo ln -fs /etc/systemd/system/autologin@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
+        sudo sed /etc/lightdm/lightdm.conf -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=pi/"
+        
         echo Installing prerequisites
         if [ "$kernel" == "4.4" ]; then
             sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
