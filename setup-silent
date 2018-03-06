@@ -4,4 +4,6 @@
 wget https://signs.pilotpen.com/setup -q --progress=bar --show-progress 
 chmod 755 setup
 ./setup --silent
+sudo sync
+sudo reboot
 
