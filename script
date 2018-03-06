@@ -294,6 +294,7 @@ genericSetup() {
       sudo wget https://raw.githubusercontent.com/PilotCorp/RPI/develop/passwd -O ~/.vnc/passwd -q --progress=bar --show-progress
     fi
 
+    mkdir -p /home/pi/Videos
     echo Video Player script
     if [ $noEth -ne 1 ]; then
       wget https://raw.githubusercontent.com/PilotCorp/RPI/develop/videoplayer -O /home/pi/videoplayer -q --progress=bar --show-progress
