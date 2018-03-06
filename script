@@ -236,7 +236,7 @@ genericSetup() {
         if [ "$kernel" == "4.4" ]; then
             sudo apt-get install -y --force-yes iceweasel unclutter php5 libapache2-mod-php5 vim omxplayer x11vnc
         else
-            sudo apt-get install -y iceweasel unclutter php7.0 php7.0-xml vim omxplayer x11vnc
+            sudo apt-get install -y iceweasel unclutter php7.0 php7.0-xml vim omxplayer x11vnc git
         fi
         if [ $? -ne 0 ]; then
             echo Error installing prerequisites. >&2
